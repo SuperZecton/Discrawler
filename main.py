@@ -1,16 +1,29 @@
-# This is a sample Python script.
+import requests
+import time
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+URL = "https://disboard.org"
 
 
-# Press the green button in the gutter to run the script.
+def is_ready(browser):
+    return browser.execute_script(r"""
+        return document.readyState === 'complete'
+    """)
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    options = webdriver.ChromeOptions()
+    # options.add_argument("headless")
+    browser = webdriver.Chrome(options=options)
+    browser.get(URL)
+    WebDriverWait(browser, 30).until(is_ready)
+    browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(1)
+    WebDriverWait(browser, 30).until(is_ready)
+    elements = browser.find_elements(By.CLASS_NAME, "server-name")
+    for elem in elements:
+        print(elem.text)
+    print("Exiting code")
+    browser.close()
